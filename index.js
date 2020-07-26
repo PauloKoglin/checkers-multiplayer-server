@@ -1,5 +1,6 @@
 
-const port = 3001
+const config = require('config');
+const port = config.get('port');
 
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
@@ -23,6 +24,6 @@ const server = require('http').Server(api);
 require('./src/socket')(server);
 
 // Start the server
-server.listen(process.env.PORT || port, () => {
+server.listen(port, () => {
     console.log(`Served at port ${port}.`)
 });

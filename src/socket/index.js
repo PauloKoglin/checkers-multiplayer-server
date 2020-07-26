@@ -44,23 +44,6 @@ function createSocket(server) {
             socket.emit('select_square', square);
             socket.in(room).emit('select_square', square);
         });
-
-        // socket.on('startGame', (game) => {
-        //     game = games.find(element => element.room === room)
-
-        //     if (game) {
-        //         socket.join(room)
-        //         game.players.push(player)
-
-        //         if (game.players.length == 2) {
-        //             // Randomize the player who starts playing
-        //             startPlayer = game.players[((Math.random() * 1).toFixed(0))]
-        //             io.to(game.room).emit(`${room}-start`, game.players, startPlayer);
-        //         }
-        //         console.log(player.name + ' connected to room ' + room);
-        //     }
-
-        // });
     });
 
 }

@@ -7,8 +7,6 @@ class GameManager {
     }
 
     createGame() {
-        // const game = new Game();
-        // this.arrGames.push(game);
         return new Game();;
     }
 
