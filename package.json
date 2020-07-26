@@ -1,0 +1,29 @@
+{
+  "name": "checkers-multiplayer-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "test": "jest",
+    "devserver": "nodemon ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bufferutil": "^4.0.1",
+    "canvas": "^2.5.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "hash-generator": "^0.1.0",
+    "helmet": "^3.23.3",
+    "socket.io": "^2.3.0",
+    "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "nodemon": "^2.0.4"
+  }
+}
