@@ -24,6 +24,6 @@ const server = require('http').Server(api);
 require('./src/socket')(server);
 
 // Start the server
-server.listen(port, () => {
+server.listen(process.env.PORT || port, () => {
     console.log(`Served at port ${port}.`)
 });
