@@ -4,9 +4,13 @@ class Game {
 
     constructor() {
         this.room = random(10);
+        this.players = [];
         this.player1 = null;
         this.player2 = null;
     }
+
+    firstPlayer() { return this.players[0]; }
+    secondPlayer() { return this.players[1] };
 
     // get room() {
     //     return this.iRoomId;
