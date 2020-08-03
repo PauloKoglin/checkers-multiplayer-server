@@ -1,11 +1,12 @@
 const socket = require('socket.io');
 const manager = require('../classes/GameManager');
 const Player = require('../classes/Player');
+const Visitor = require('../classes/Visitor');
 const types = require('../types');
 
-module.exports = createSocket;
+let visitors = require('../classes/VisitorManager');
 
-const connectedPlayers = [];
+module.exports = createSocket;
 
 function bindGameReturn(game) {
     return {
@@ -19,24 +20,25 @@ function createSocket(server) {
     const io = socket.listen(server)
 
     io.on('connection', (socket) => {
+        const visitor = new Visitor({
+            connectionId: socket.id,
+            ipAddress: socket.handshake.address,
+        });
+
+        visitors.push(visitor);
         console.log("user connected: ".concat(socket.id));
 
         socket.on('disconnect', () => {
             console.log("user disconnect: ".concat(socket.id));
 
-            let game = manager.games.find(game => {
-                return game.players.map(player => {
-                    if (player.connectionId === socket.id)
-                        player.connected = false;
-
-                    return player;
-                });
+            const visitor = visitors.find(item => item.connectionId === socket.id);
+            visitor.joinedGames.forEach(game => {
+                game.setPlayerDisconnectedFromGame(socket.id);
+                console.log("Player disconnected from game: ".concat(game.room));
+                socket.in(game.room).emit('player_disconnect', game);
             });
 
-            if (game) {
-                console.log("game is paused: ".concat(game.room));
-                socket.in(game.room).emit('player_disconnect', game);
-            }
+            visitors = visitors.filter(element => element.connectionId !== socket.id);
         });
 
         socket.on('create_room', (values = {}) => {
@@ -50,7 +52,9 @@ function createSocket(server) {
             })
             game.players.push(player);
             manager.addGame(game);
-            console.log(game);
+            visitors.forEach(element => {
+                element.joinedGames.push(game);
+            });
 
             socket.join(game.room);
             console.log(`Room ${game.room} has created by ${player.name}...`);
@@ -74,10 +78,29 @@ function createSocket(server) {
                 firstplayer: false,
             });
 
+            visitors.forEach(element => {
+                element.joinedGames.push(game);
+            });
+
             game.players.push(player);
             console.log(`${player.name} has joined the room ${game.room}...`);
 
             socket.join(game.room);
+        });
+
+        socket.on('reconnect_room', (values) => {
+            const game = manager.getGameByRoom(values.room);
+            game.players.map(player => {
+                if (player.name === values.name)
+                    player.connected = true;
+
+                return player;
+            });
+            socket.join(game.room);
+            console.log(`${values.name} reconnect the room ${game.room}...`);
+
+            socket.emit('reconnect_room');
+            socket.in(room).emit('reconnect_room');
         });
 
         socket.on('move_piece_to', (room, index) => {

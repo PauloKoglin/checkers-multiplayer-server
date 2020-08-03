@@ -5,36 +5,21 @@ class Game {
     constructor() {
         this.room = random(10);
         this.players = [];
-        this.player1 = null;
-        this.player2 = null;
+        // this.player1 = null;
+        // this.player2 = null;
     }
 
-    firstPlayer() { return this.players[0]; }
-    secondPlayer() { return this.players[1] };
+    firstPlayer() { return this.players[0]; };
+    secondPlayer() { return this.players[1]; };
 
-    // get room() {
-    //     return this.iRoomId;
-    // }
+    setPlayerDisconnectedFromGame(connectionId) {
+        this.players = this.players.map(player => {
+            if (player.connectionId === connectionId)
+                player.connected = false
 
-    // set room(value) {
-    //     this.iRoomId = value;
-    // }
-
-    // get player1() {
-    //     return this.oPlayer1;
-    // }
-
-    // set player1(value) {
-    //     this.oPlayer1 = value;
-    // }
-
-    // get Player2() {
-    //     return this.oPlayer2;
-    // }
-
-    // set Player2(value) {
-    //     this.oPlayer2 = value;
-    // }
+            return player;
+        })
+    }
 }
 
 module.exports = Game;
