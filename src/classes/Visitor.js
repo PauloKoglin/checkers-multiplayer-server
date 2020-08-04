@@ -5,6 +5,11 @@ class Visitor {
             this.connectionDate = new Date(),
             this.joinedGames = []
     }
+
+    addJoinedGame(game) {
+        this.joinedGames.push(game);
+        return this;
+    }
 }
 
 module.exports = Visitor;

@@ -1,6 +1,6 @@
 class Player {
     constructor(values = {}) {
-        // this.connectionId = values.connectionId;
+        this.connectionId = values.connectionId;
         this.name = values.name;
         this.pieceColor = values.pieceColor;
         this.firstPlayer = values.firstPlayer;
