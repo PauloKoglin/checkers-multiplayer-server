@@ -4,7 +4,12 @@ class Game {
 
     constructor() {
         this.room = random(10);
+        this.squares = null;
         this.players = [];
+        this.capturedRedPieces = 0;
+        this.capturedYellowPieces = 0;
+        this.isWhiteNext = true;
+        this.selectedSquareIndex = null;
     };
 
     getFirstPlayer() {
