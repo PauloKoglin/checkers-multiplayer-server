@@ -6,7 +6,7 @@ const { bindGameReturn } = require('../utils');
 
 const onCreateRoom = (socket) => {
     return (values = {}) => {
-        const game = manager.createGame();
+        const game = manager.createGame({ ownerConnectionId: socket.id });
         const player = new Player({
             connectionId: socket.id,
             name: values.playerName,
@@ -17,10 +17,10 @@ const onCreateRoom = (socket) => {
         game.players.push(player);
         manager.addGame(game);
         const visitor = visitorManager.getVisitorByConnectionId(socket.id);
-        visitor.joinedGames.push(game);
+        visitor.joinedGame = game;
 
         socket.join(game.room);
-        console.log(`Room ${game.room} has created by ${player.name}...`);
+        console.log(`Game created by ${player.name}: ${game}`);
         socket.emit('create_room', bindGameReturn(game));
     };
 };

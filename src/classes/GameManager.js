@@ -6,15 +6,17 @@ class GameManager {
         this.arrGames = [];
     }
 
-    createGame() {
-        return new Game();;
+    createGame(params) {
+        console.log(params);
+        return new Game(params);
     }
 
-    removeGame(roomId) {
+    removeGameByRoomId(roomId) {
         const newGames = this.arrGames.filter(game => {
             return game.room !== roomId;
         });
         this.arrGames = newGames;
+        return this;
     }
 
     get games() {

@@ -14,7 +14,7 @@ describe("removeGame_WithOneGames", () => {
 
     it("should return return empty array", () => {
         const game = gameManager.createGame();
-        gameManager.removeGame(game.room);
+        gameManager.removeGameByRoomId(game.room);
 
         expect(gameManager.games.length).toEqual(0);
     });

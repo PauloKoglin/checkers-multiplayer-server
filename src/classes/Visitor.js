@@ -3,12 +3,16 @@ class Visitor {
         this.connectionId = values.connectionId,
             this.ipAddress = values.ipAddress,
             this.connectionDate = new Date(),
-            this.joinedGames = []
+            this.joinedGame = null;
     }
 
-    addJoinedGame(game) {
-        this.joinedGames.push(game);
+    set game(game) {
+        this.joinedGame = game;
         return this;
+    }
+
+    get game() {
+        return this.joinedGame;
     }
 }
 

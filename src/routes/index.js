@@ -1,6 +1,6 @@
 const routes = require("express").Router();
-const room = require("./api/room");
+const rooms = require("./api/rooms");
 
-routes.use("/room", room);
+routes.use("/rooms", rooms);
 
 module.exports = routes;

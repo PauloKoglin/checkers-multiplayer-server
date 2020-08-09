@@ -1,19 +1,25 @@
 const visitorManager = require('../../classes/VisitorManager');
+const gameManager = require('../../classes/GameManager');
 
 const onDisconnect = (socket) => {
     return () => {
         console.log("user disconnect: ".concat(socket.id));
+        const visitorConnectionId = socket.id;
+        const visitor = visitorManager.getVisitorByConnectionId(visitorConnectionId);
 
-        const visitor = visitorManager.getVisitorByConnectionId(socket.id);
+        if (visitor) {
+            if (visitor.joinedGame && visitor.joinedGame.ownerConnectionId === visitorConnectionId) {
+                gameManager.removeGameByRoomId(visitor.joinedGame.room);
+            } else {
+                if (visitor.joinedGame) {
+                    visitor.joinedGame.setPlayerDisconnectedByConnectionId(visitorConnectionId);
+                    socket.in(visitor.joinedGame.room).emit('player_disconnect', visitor.joinedGame);
+                }
+            }
 
-        visitor.joinedGames.forEach(game => {
-            game.setPlayerDisconnectedByConnectionId(socket.id);
-            console.log("Player disconnected from game: ".concat(game.room));
-            socket.in(game.room).emit('player_disconnect', game);
-        });
-
-        visitorManager.removeVisitorByConnectionId(socket.id);
+            visitorManager.removeVisitorByConnectionId(visitorConnectionId);
+        }
     };
-}
+};
 
 module.exports = onDisconnect;

@@ -17,7 +17,8 @@ const onJoinGame = (socket) => {
 
         game.addPlayer(player);
 
-        visitorManager.getVisitorByConnectionId(socket.id).addJoinedGame(game);
+        const visitor = visitorManager.getVisitorByConnectionId(socket.id);
+        visitor.game = game;
 
         socket.join(game.room);
         console.log(`${player.name} has joined the room ${game.room}...`);
