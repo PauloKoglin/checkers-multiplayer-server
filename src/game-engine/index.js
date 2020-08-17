@@ -37,9 +37,10 @@ function initializeBoardSquares() {
                 possibleMoves: [],
             }
         }
-    )
-    let line = 0
-    let index = 0
+    );
+
+    let line = 0;
+    let index = 0;
 
     squares = squares.map((square, i) => {
         let piece = {};
@@ -71,10 +72,10 @@ function initializeBoardSquares() {
         } else
             square = i % 2 === 0 ? { ...square, color: "darkyellow", index: i } : { ...square, color: "brown", index: i, piece }
 
-        return square
-    })
+        return square;
+    });
 
-    return squares
+    return squares;
 }
 
 const squareHasPiece = (squares, index) => squares[index].piece.color
@@ -84,42 +85,42 @@ function isCheckerPosition(piece, position) {
 }
 
 // Recursive method
-function calculateCheckerDiagonal(squares, position, checkIndex, moves) {
+function calculateCheckerDiagonalMove(squares, position, checkIndex, moves) {
     let checkPosition = position + checkIndex
     let squareAtPosition = squares[checkPosition]
 
     if (squareAtPosition && !squareAtPosition.piece.color) {
         moves = [...moves, new Move(checkPosition)]
         if (!LEFT_SQUARE_INDEX.includes(checkPosition) && !RIGHT_SQUARE_INDEX.includes(checkPosition)) {
-            return calculateCheckerDiagonal(squares, squareAtPosition.index, checkIndex, moves)
+            return calculateCheckerDiagonalMove(squares, squareAtPosition.index, checkIndex, moves)
         }
     }
     return moves
 }
 
-function calculateCheckerMoves(squares, square) {
+function calculatePossibleMovesOfChecker(squares, square) {
     let moves = []
 
     if (!LEFT_SQUARE_INDEX.includes(square.index))
-        moves = calculateCheckerDiagonal(squares, square.index, CHECK_INDEX_RIGHT_FORWARD, moves)
+        moves = calculateCheckerDiagonalMove(squares, square.index, CHECK_INDEX_RIGHT_FORWARD, moves)
 
     if (!RIGHT_SQUARE_INDEX.includes(square.index))
-        moves = calculateCheckerDiagonal(squares, square.index, CHECK_INDEX_RIGTH_BACKWARD, moves)
+        moves = calculateCheckerDiagonalMove(squares, square.index, CHECK_INDEX_RIGTH_BACKWARD, moves)
 
     if (!RIGHT_SQUARE_INDEX.includes(square.index))
-        moves = calculateCheckerDiagonal(squares, square.index, CHECK_INDEX_LEFT_FORWARD, moves)
+        moves = calculateCheckerDiagonalMove(squares, square.index, CHECK_INDEX_LEFT_FORWARD, moves)
 
     if (!LEFT_SQUARE_INDEX.includes(square.index))
-        moves = calculateCheckerDiagonal(squares, square.index, CHECK_INDEX_LEFT_BACKWARD, moves)
+        moves = calculateCheckerDiagonalMove(squares, square.index, CHECK_INDEX_LEFT_BACKWARD, moves)
 
     return moves
 }
 
-function calculatePossiblesMoves(squares, square) {
+function calculatePossiblesMovesOfPiece(squares, square) {
     let moves = []
 
     if (square.piece.isChecker) {
-        moves = calculateCheckerMoves(squares, square);
+        moves = calculatePossibleMovesOfChecker(squares, square);
         return moves;
     }
 
@@ -161,7 +162,7 @@ function calculatePossiblesMoves(squares, square) {
     return moves;
 }
 
-function returnPositionsToCapture(squares, color, position, checkIndex, excludedPosition, move) {
+function returnCaptureJumpIfCanCapture(squares, color, position, checkIndex, excludedPosition, move) {
     let checkPosition = position + checkIndex
     let afterCapturePosition = checkPosition + checkIndex
     let squareToCapture = squares[checkPosition]
@@ -175,46 +176,46 @@ function returnPositionsToCapture(squares, color, position, checkIndex, excluded
 }
 
 // recursive
-function calculatePossibleCaptures(squares, color, position, excludedPosition, move) {
+function calculatePossiblePiecesToCapture(squares, color, position, excludedPosition, move) {
     let jump;
 
     if (!move)
         move = new Move();
 
-    jump = returnPositionsToCapture(squares, color, position, CHECK_INDEX_RIGHT_FORWARD, excludedPosition)
+    jump = returnCaptureJumpIfCanCapture(squares, color, position, CHECK_INDEX_RIGHT_FORWARD, excludedPosition)
     if (jump) {
         move.addJump(jump);
-        return calculatePossibleCaptures(squares, color, jump.toIndex, position, move);
+        return calculatePossiblePiecesToCapture(squares, color, jump.toIndex, position, move);
     }
 
-    jump = returnPositionsToCapture(squares, color, position, CHECK_INDEX_RIGTH_BACKWARD, excludedPosition)
+    jump = returnCaptureJumpIfCanCapture(squares, color, position, CHECK_INDEX_RIGTH_BACKWARD, excludedPosition)
     if (jump) {
         move.addJump(jump);
-        return calculatePossibleCaptures(squares, color, jump.toIndex, position, move);
+        return calculatePossiblePiecesToCapture(squares, color, jump.toIndex, position, move);
     }
 
-    jump = returnPositionsToCapture(squares, color, position, CHECK_INDEX_LEFT_FORWARD, excludedPosition)
+    jump = returnCaptureJumpIfCanCapture(squares, color, position, CHECK_INDEX_LEFT_FORWARD, excludedPosition)
     if (jump) {
         move.addJump(jump);
-        return calculatePossibleCaptures(squares, color, jump.toIndex, position, move);
+        return calculatePossiblePiecesToCapture(squares, color, jump.toIndex, position, move);
     }
 
-    jump = returnPositionsToCapture(squares, color, position, CHECK_INDEX_LEFT_BACKWARD, excludedPosition)
+    jump = returnCaptureJumpIfCanCapture(squares, color, position, CHECK_INDEX_LEFT_BACKWARD, excludedPosition)
     if (jump) {
         move.addJump(jump);
-        return calculatePossibleCaptures(squares, color, jump.toIndex, position, move);
+        return calculatePossiblePiecesToCapture(squares, color, jump.toIndex, position, move);
     }
 
     if (move.jumpSequence.length > 0)
         return move;
 }
 
-function calculateMoves(pieceColor, squares) {
+function calculateNextMovesForPiece(pieceColor, squares) {
     const squaresWithPieces = squares.filter(square => square.piece.color === pieceColor);
     let hasCapturPossibility = false;
 
     squaresWithPieces.forEach(square => {
-        let move = calculatePossibleCaptures(squares, square.piece.color, square.index);
+        let move = calculatePossiblePiecesToCapture(squares, square.piece.color, square.index);
 
         if (move) {
             hasCapturPossibility = true;
@@ -228,7 +229,7 @@ function calculateMoves(pieceColor, squares) {
         return squaresWithPieces;
 
     squaresWithPieces.forEach(square => {
-        let moves = calculatePossiblesMoves(squares, square);
+        let moves = calculatePossiblesMovesOfPiece(squares, square);
 
         if (moves.length > 0) {
             square.piece.isMovable = true
@@ -241,7 +242,7 @@ function calculateMoves(pieceColor, squares) {
 
 function startGame() {
     const squares = initializeBoardSquares();
-    const calculatedMoves = calculateMoves(types.WHITE_PIECE, squares);
+    const calculatedMoves = calculateNextMovesForPiece(types.WHITE_PIECE, squares);
 
     squares.join(calculatedMoves);
 
@@ -303,7 +304,7 @@ function movePieceTo(game, selectedIndex, indexToMoveTo) {
         });
 
         // calculate the next possible moves for the player                
-        squares.join(calculateMoves(isWhiteNext ? types.RED_PIECE : types.WHITE_PIECE, squares));
+        squares.join(calculateNextMovesForPiece(isWhiteNext ? types.RED_PIECE : types.WHITE_PIECE, squares));
         isWhiteNext = !isWhiteNext;
     }
 
@@ -322,5 +323,5 @@ module.exports = {
     initializeBoardSquares,
     setSquaresToPossibleMove,
     isCheckerPosition,
-    calculateMoves
+    calculateNextMovesForPiece
 };

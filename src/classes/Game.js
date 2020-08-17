@@ -2,9 +2,9 @@ const random = require('hash-generator');
 
 class Game {
 
-    constructor({ ownerConnectionId }) {
+    constructor(params = {}) {
         this.room = random(10);
-        this.ownerConnectionId = ownerConnectionId;
+        this.ownerConnectionId = params.ownerConnectionId;
         this.squares = null;
         this.players = [];
         this.capturedRedPieces = 0;
